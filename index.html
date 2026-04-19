@@ -1,1227 +1,1540 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MAISON — Premium Store</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Mastery — Docker & Kubernetes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #1a1d24;
+    --border: #2a2d36;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #a8ff3e;
+    --text: #e8eaf0;
+    --text-muted: #7a7f8e;
+    --docker-color: #2496ed;
+    --k8s-color: #326ce5;
+    --tag-bg: #1e2130;
+    --code-bg: #0d1117;
+    --glow: 0 0 20px rgba(0,229,255,0.15);
+  }
 
-    :root {
-      --cream: #F5F0E8;
-      --warm-white: #FDFAF5;
-      --charcoal: #1A1814;
-      --dark-brown: #2C2419;
-      --bronze: #9A6B3C;
-      --bronze-light: #C48B50;
-      --muted: #8A7E70;
-      --border: #E0D8CC;
-      --card-bg: #FFFFFF;
-    }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--warm-white);
-      color: var(--charcoal);
-      overflow-x: hidden;
-      cursor: none;
-    }
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-    /* Custom Cursor */
-    .cursor {
-      position: fixed;
-      width: 10px; height: 10px;
-      background: var(--bronze);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
-      mix-blend-mode: multiply;
-    }
-    .cursor-ring {
-      position: fixed;
-      width: 36px; height: 36px;
-      border: 1px solid var(--bronze);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: transform 0.18s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
-      opacity: 0.5;
-    }
-    body:hover .cursor { opacity: 1; }
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 80px 40px 60px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
 
-    /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 20px 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(253, 250, 245, 0.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.8rem;
-      font-weight: 300;
-      letter-spacing: 0.35em;
-      color: var(--charcoal);
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-    .nav-logo span { color: var(--bronze); }
-    .nav-links {
-      display: flex; gap: 40px; list-style: none;
-    }
-    .nav-links a {
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--charcoal);
-      text-decoration: none;
-      position: relative;
-      transition: color 0.3s;
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 0;
-      width: 0; height: 1px;
-      background: var(--bronze);
-      transition: width 0.4s ease;
-    }
-    .nav-links a:hover { color: var(--bronze); }
-    .nav-links a:hover::after { width: 100%; }
-    .nav-actions {
-      display: flex; gap: 20px; align-items: center;
-    }
-    .nav-actions button {
-      background: none; border: none; cursor: none;
-      font-size: 1.1rem; color: var(--charcoal);
-      transition: color 0.3s; padding: 4px;
-    }
-    .nav-actions button:hover { color: var(--bronze); }
-    .cart-btn {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--charcoal) !important;
-      color: var(--cream) !important;
-      padding: 10px 22px !important;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.72rem !important;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: background 0.3s !important;
-    }
-    .cart-btn:hover { background: var(--bronze) !important; }
-    .cart-count {
-      background: var(--bronze);
-      color: white;
-      border-radius: 50%;
-      width: 18px; height: 18px;
-      font-size: 0.6rem;
-      display: flex; align-items: center; justify-content: center;
-    }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(0,229,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      padding-top: 80px;
-    }
-    .hero-left {
-      background: var(--charcoal);
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: flex-start;
-      padding: 80px 80px 80px 60px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-left::before {
-      content: '';
-      position: absolute;
-      top: -100px; right: -100px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(154,107,60,0.2), transparent 60%);
-      pointer-events: none;
-    }
-    .hero-eyebrow {
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--bronze);
-      margin-bottom: 32px;
-      opacity: 0;
-      animation: fadeUp 0.8s 0.2s forwards;
-    }
-    .hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3.5rem, 6vw, 6rem);
-      font-weight: 300;
-      line-height: 1.05;
-      color: var(--cream);
-      margin-bottom: 32px;
-      opacity: 0;
-      animation: fadeUp 0.8s 0.4s forwards;
-    }
-    .hero-title em {
-      font-style: italic;
-      color: var(--bronze-light);
-    }
-    .hero-desc {
-      font-size: 0.95rem;
-      line-height: 1.8;
-      color: var(--muted);
-      max-width: 380px;
-      margin-bottom: 48px;
-      opacity: 0;
-      animation: fadeUp 0.8s 0.6s forwards;
-    }
-    .hero-cta-group {
-      display: flex; gap: 16px; align-items: center;
-      opacity: 0;
-      animation: fadeUp 0.8s 0.8s forwards;
-    }
-    .btn-primary {
-      background: var(--bronze);
-      color: white;
-      border: none;
-      padding: 16px 40px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      cursor: none;
-      transition: all 0.35s ease;
-      position: relative; overflow: hidden;
-    }
-    .btn-primary::before {
-      content: '';
-      position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.1);
-      transition: left 0.4s ease;
-    }
-    .btn-primary:hover::before { left: 100%; }
-    .btn-primary:hover { background: var(--bronze-light); transform: translateY(-2px); }
-    .btn-ghost {
-      background: transparent;
-      color: var(--cream);
-      border: 1px solid rgba(245,240,232,0.3);
-      padding: 16px 32px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: none;
-      transition: all 0.3s;
-    }
-    .btn-ghost:hover { border-color: var(--bronze); color: var(--bronze); }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(0,229,255,0.3);
+    padding: 6px 16px;
+    border-radius: 2px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
 
-    .hero-right {
-      background: var(--cream);
-      position: relative;
-      overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .hero-visual {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-    }
-    .hero-circle {
-      width: 420px; height: 520px;
-      background: linear-gradient(135deg, #E8DDD0 0%, #D4C4B0 50%, #C4B098 100%);
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      position: relative;
-      animation: floatAnim 6s ease-in-out infinite;
-      box-shadow: 0 40px 80px rgba(44,36,25,0.15);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .hero-product-label {
-      position: absolute;
-      bottom: -40px; right: -20px;
-      background: white;
-      padding: 16px 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    .hero-product-label .name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      color: var(--charcoal);
-    }
-    .hero-product-label .price {
-      font-size: 0.8rem;
-      color: var(--bronze);
-      letter-spacing: 0.05em;
-    }
-    .hero-badge {
-      position: absolute;
-      top: 40px; right: 50px;
-      width: 80px; height: 80px;
-      background: var(--bronze);
-      border-radius: 50%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      animation: spinSlow 12s linear infinite;
-    }
-    .hero-badge span {
-      font-size: 0.55rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: white;
-      line-height: 1.4;
-      text-align: center;
-    }
-    .hero-icon-large {
-      font-size: 8rem;
-      opacity: 0.3;
-      filter: grayscale(1);
-    }
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 88px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
 
-    /* MARQUEE */
-    .marquee-strip {
-      background: var(--charcoal);
-      padding: 14px 0;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    .marquee-track {
-      display: inline-flex;
-      animation: marquee 25s linear infinite;
-    }
-    .marquee-item {
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 0 32px;
-    }
-    .marquee-item span { color: var(--bronze); margin: 0 16px; }
+  .hero h1 span.accent { color: var(--accent); }
+  .hero h1 span.accent2 { color: var(--accent2); }
 
-    /* SECTION HEADER */
-    .section-header {
-      text-align: center;
-      margin-bottom: 64px;
-    }
-    .section-eyebrow {
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--bronze);
-      margin-bottom: 16px;
-    }
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 300;
-      line-height: 1.2;
-      color: var(--charcoal);
-    }
-    .section-title em { font-style: italic; }
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
 
-    /* CATEGORIES */
-    .categories {
-      padding: 100px 60px;
-      background: var(--warm-white);
-    }
-    .category-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 16px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    .cat-card {
-      position: relative;
-      overflow: hidden;
-      cursor: none;
-      aspect-ratio: unset;
-    }
-    .cat-card:first-child { grid-row: 1 / 3; }
-    .cat-bg {
-      width: 100%; height: 100%; min-height: 280px;
-      display: flex; align-items: flex-end;
-      padding: 32px;
-      position: relative;
-      transition: transform 0.6s ease;
-    }
-    .cat-card:hover .cat-bg { transform: scale(1.03); }
-    .cat-card:first-child .cat-bg { min-height: 580px; }
-    .cat-1 { background: linear-gradient(160deg, #2C2419 0%, #4A3828 40%, #9A6B3C 100%); }
-    .cat-2 { background: linear-gradient(160deg, #E8DDD0 0%, #D4C4B0 100%); }
-    .cat-3 { background: linear-gradient(160deg, #3A3530 0%, #6B5D52 100%); }
-    .cat-4 { background: linear-gradient(160deg, #F0E8DC 0%, #E0CFC0 100%); }
-    .cat-5 { background: linear-gradient(160deg, #1A1814 0%, #3C3228 100%); }
-    .cat-icon { font-size: 3.5rem; position: absolute; top: 24px; right: 24px; opacity: 0.4; }
-    .cat-info { z-index: 1; }
-    .cat-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--bronze);
-      margin-bottom: 8px;
-    }
-    .cat-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.8rem;
-      font-weight: 300;
-      line-height: 1.1;
-      color: var(--cream);
-    }
-    .cat-2 .cat-name, .cat-4 .cat-name { color: var(--dark-brown); }
-    .cat-count {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 6px;
-    }
-    .cat-2 .cat-count, .cat-4 .cat-count { color: #8A7E70; }
+  .hero-pills {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
 
-    /* PRODUCTS */
-    .products {
-      padding: 100px 60px;
-      background: var(--cream);
-    }
-    .products-filter {
-      display: flex; gap: 4px; justify-content: center;
-      margin-bottom: 56px;
-      flex-wrap: wrap;
-    }
-    .filter-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      padding: 10px 24px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      cursor: none;
-      transition: all 0.3s;
-    }
-    .filter-btn:hover, .filter-btn.active {
-      background: var(--charcoal);
-      border-color: var(--charcoal);
-      color: var(--cream);
-    }
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 32px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    .product-card {
-      position: relative;
-      cursor: none;
-    }
-    .product-image {
-      aspect-ratio: 3/4;
-      background: var(--warm-white);
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 20px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .product-emoji { font-size: 5rem; opacity: 0.6; transition: transform 0.5s ease; }
-    .product-card:hover .product-emoji { transform: scale(1.15) rotate(-3deg); }
-    .product-overlay {
-      position: absolute; inset: 0;
-      background: rgba(26,24,20,0.7);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 12px;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .product-card:hover .product-overlay { opacity: 1; }
-    .overlay-btn {
-      background: white;
-      border: none;
-      padding: 12px 28px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: none;
-      width: 70%;
-      transition: background 0.3s;
-    }
-    .overlay-btn:hover { background: var(--bronze); color: white; }
-    .overlay-btn.secondary {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.5);
-      color: white;
-    }
-    .overlay-btn.secondary:hover { background: white; color: var(--charcoal); }
-    .product-tag {
-      position: absolute; top: 16px; left: 16px;
-      background: var(--bronze);
-      color: white;
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 5px 10px;
-    }
-    .product-tag.new { background: var(--charcoal); }
-    .wishlist-btn {
-      position: absolute; top: 16px; right: 16px;
-      background: white;
-      border: none; border-radius: 50%;
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
-      cursor: none;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: all 0.3s;
-      opacity: 0; transform: translateY(-8px);
-    }
-    .product-card:hover .wishlist-btn { opacity: 1; transform: translateY(0); }
-    .wishlist-btn:hover { background: var(--bronze); color: white; }
-    .product-info { padding: 0 4px; }
-    .product-cat {
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--bronze);
-      margin-bottom: 6px;
-    }
-    .product-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem;
-      font-weight: 400;
-      color: var(--charcoal);
-      margin-bottom: 8px;
-    }
-    .product-pricing {
-      display: flex; align-items: center; gap: 10px;
-    }
-    .product-price {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--charcoal);
-    }
-    .product-original {
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-decoration: line-through;
-    }
-    .product-stars { font-size: 0.65rem; color: var(--bronze); margin-top: 4px; }
+  .pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
 
-    /* PROMO BANNER */
-    .promo-banner {
-      padding: 100px 60px;
-      background: var(--charcoal);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-      align-items: center;
-      max-width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-    .promo-banner::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 70% 50%, rgba(154,107,60,0.15), transparent 60%);
-    }
-    .promo-left { padding-right: 60px; position: relative; }
-    .promo-eyebrow {
-      font-size: 0.7rem; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--bronze);
-      margin-bottom: 20px;
-    }
-    .promo-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 300; line-height: 1.1;
-      color: var(--cream); margin-bottom: 24px;
-    }
-    .promo-title strong { font-weight: 600; color: var(--bronze-light); }
-    .promo-desc {
-      font-size: 0.9rem; line-height: 1.9;
-      color: var(--muted); max-width: 400px; margin-bottom: 40px;
-    }
-    .promo-right {
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-    }
-    .promo-visual {
-      width: 340px; height: 420px;
-      background: linear-gradient(135deg, #3C3228, #6B5D52);
-      border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10rem;
-      box-shadow: -40px 40px 80px rgba(0,0,0,0.4);
-      position: relative;
-    }
-    .promo-visual::after {
-      content: '';
-      position: absolute; inset: 12px;
-      border: 1px solid rgba(154,107,60,0.3);
-      pointer-events: none;
-    }
-    .countdown {
-      display: flex; gap: 24px; margin-bottom: 40px;
-    }
-    .count-item { text-align: center; }
-    .count-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.5rem; font-weight: 300;
-      color: var(--cream); line-height: 1;
-    }
-    .count-label {
-      font-size: 0.6rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--muted);
-      margin-top: 4px;
-    }
-    .count-sep {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem; color: var(--bronze);
-      align-self: flex-start; padding-top: 4px;
-    }
+  /* ── CONCEPTS GRID ── */
+  .section {
+    position: relative;
+    z-index: 1;
+    padding: 60px 40px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
 
-    /* NEWSLETTER */
-    .newsletter {
-      padding: 80px 60px;
-      background: var(--bronze);
-      text-align: center;
-    }
-    .newsletter-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 300;
-      color: white;
-      margin-bottom: 12px;
-    }
-    .newsletter-sub {
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 36px;
-    }
-    .newsletter-form {
-      display: flex;
-      max-width: 480px;
-      margin: 0 auto;
-      gap: 0;
-    }
-    .newsletter-input {
-      flex: 1;
-      padding: 16px 24px;
-      border: none;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      outline: none;
-      border-bottom: 1px solid rgba(255,255,255,0.5);
-    }
-    .newsletter-input::placeholder { color: rgba(255,255,255,0.5); }
-    .newsletter-submit {
-      background: var(--charcoal);
-      color: white;
-      border: none;
-      padding: 16px 28px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      cursor: none;
-      transition: background 0.3s;
-    }
-    .newsletter-submit:hover { background: var(--dark-brown); }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
 
-    /* FOOTER */
-    footer {
-      background: var(--dark-brown);
-      padding: 80px 60px 40px;
-    }
-    .footer-top {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 60px;
-      margin-bottom: 60px;
-      padding-bottom: 60px;
-      border-bottom: 1px solid rgba(245,240,232,0.1);
-    }
-    .footer-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem; font-weight: 300;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--cream);
-      margin-bottom: 20px;
-    }
-    .footer-logo span { color: var(--bronze); }
-    .footer-desc {
-      font-size: 0.85rem; line-height: 1.8;
-      color: var(--muted); max-width: 280px; margin-bottom: 32px;
-    }
-    .footer-social {
-      display: flex; gap: 12px;
-    }
-    .social-icon {
-      width: 38px; height: 38px;
-      border: 1px solid rgba(245,240,232,0.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem; color: var(--muted);
-      cursor: none; transition: all 0.3s;
-    }
-    .social-icon:hover { border-color: var(--bronze); color: var(--bronze); }
-    .footer-col-title {
-      font-size: 0.7rem; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--cream);
-      margin-bottom: 24px;
-    }
-    .footer-links { list-style: none; }
-    .footer-links li { margin-bottom: 12px; }
-    .footer-links a {
-      font-size: 0.85rem; color: var(--muted);
-      text-decoration: none; transition: color 0.3s;
-    }
-    .footer-links a:hover { color: var(--bronze); }
-    .footer-bottom {
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .footer-copy {
-      font-size: 0.75rem; color: var(--muted);
-    }
-    .footer-bottom-links {
-      display: flex; gap: 24px;
-    }
-    .footer-bottom-links a {
-      font-size: 0.72rem; color: var(--muted);
-      text-decoration: none; transition: color 0.3s;
-    }
-    .footer-bottom-links a:hover { color: var(--bronze); }
-    .payment-icons { display: flex; gap: 8px; align-items: center; }
-    .pay-icon {
-      background: rgba(245,240,232,0.08);
-      border: 1px solid rgba(245,240,232,0.1);
-      padding: 4px 10px;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-    }
+  .section-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
 
-    /* TRUST BAR */
-    .trust-bar {
-      background: var(--warm-white);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 32px 60px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-    }
-    .trust-item {
-      display: flex; align-items: center; gap: 16px;
-      padding: 0 32px;
-      border-right: 1px solid var(--border);
-    }
-    .trust-item:last-child { border-right: none; }
-    .trust-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .trust-text-title {
-      font-size: 0.8rem; font-weight: 500;
-      letter-spacing: 0.05em; color: var(--charcoal);
-      margin-bottom: 2px;
-    }
-    .trust-text-sub { font-size: 0.72rem; color: var(--muted); }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
 
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes floatAnim {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-12px) rotate(1deg); }
-      66% { transform: translateY(-6px) rotate(-1deg); }
-    }
-    @keyframes spinSlow {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
+  .section-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
 
-    /* Scroll reveal */
-    .reveal {
-      opacity: 0; transform: translateY(40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-    .reveal.visible { opacity: 1; transform: none; }
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
 
-    @media (max-width: 1024px) {
-      nav { padding: 16px 24px; }
-      .nav-links { display: none; }
-      .hero { grid-template-columns: 1fr; }
-      .hero-right { display: none; }
-      .hero-left { padding: 60px 24px; }
-      .categories, .products, .promo-banner, footer { padding-left: 24px; padding-right: 24px; }
-      .products-grid { grid-template-columns: repeat(2, 1fr); }
-      .category-grid { grid-template-columns: 1fr 1fr; }
-      .cat-card:first-child { grid-column: 1 / -1; grid-row: auto; }
-      .promo-banner { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
-      .trust-bar { grid-template-columns: 1fr 1fr; gap: 24px; }
-    }
-  </style>
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .concept-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: var(--glow);
+  }
+
+  .concept-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .concept-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .concept-card p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+  }
+
+  .concept-tag {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .tag-devops { background: rgba(168,255,62,0.1); color: var(--accent3); border: 1px solid rgba(168,255,62,0.2); }
+  .tag-infra { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.2); }
+  .tag-process { background: rgba(255,107,53,0.1); color: var(--accent2); border: 1px solid rgba(255,107,53,0.2); }
+
+  /* ── TAB SYSTEM ── */
+  .tabs-section {
+    position: relative;
+    z-index: 1;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px 40px 80px;
+  }
+
+  .tabs-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .tool-selector {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .tool-btn {
+    flex: 1;
+    padding: 14px 24px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .tool-btn.active-docker {
+    background: rgba(36,150,237,0.12);
+    color: #2496ed;
+    border-right: 2px solid #2496ed;
+  }
+
+  .tool-btn.active-k8s {
+    background: rgba(50,108,229,0.12);
+    color: #6b8fff;
+    border-left: 2px solid #6b8fff;
+  }
+
+  .tool-btn svg { width: 18px; height: 18px; }
+
+  /* Day Tabs */
+  .day-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-tabs::-webkit-scrollbar { display: none; }
+
+  .day-tab {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+  }
+
+  .day-tab:hover { color: var(--text); }
+
+  .day-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* Content Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .day-panel { display: none; }
+  .day-panel.active { display: block; animation: fadeUp 0.3s ease; }
+
+  .day-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .day-meta-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .day-meta-info h4 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .day-meta-info p {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .code-blocks { display: flex; flex-direction: column; gap: 20px; }
+
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-block-title {
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-block-title .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  .code-block-title .dot.docker { background: #2496ed; }
+  .code-block-title .dot.k8s { background: #6b8fff; }
+
+  .copy-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 4px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .code-desc {
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-style: italic;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+  }
+
+  pre {
+    margin: 0;
+    padding: 20px 22px;
+    background: var(--code-bg);
+    overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .c-comment { color: #6a737d; }
+  .c-cmd { color: #ff79c6; }
+  .c-flag { color: #bd93f9; }
+  .c-val { color: #50fa7b; }
+  .c-str { color: #f1fa8c; }
+  .c-key { color: #8be9fd; }
+  .c-op { color: #ff5555; }
+  .c-num { color: #ffb86c; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    position: relative;
+    z-index: 1;
+    height: 1px;
+    background: var(--border);
+    margin: 0 40px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero { padding: 60px 20px 40px; }
+    .section, .tabs-section { padding-left: 20px; padding-right: 20px; }
+    .concepts-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- Custom Cursor -->
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">// DevOps Mastery Guide</div>
+  <h1>
+    <span class="accent">Docker</span> &<br>
+    <span class="accent2">Kubernetes</span>
+  </h1>
+  <p class="hero-sub">A structured, day-by-day guide to containerization, orchestration, and modern DevOps practices — from concepts to production-ready code.</p>
+  <div class="hero-pills">
+    <span class="pill">Containers</span>
+    <span class="pill">CI/CD</span>
+    <span class="pill">Orchestration</span>
+    <span class="pill">Microservices</span>
+    <span class="pill">Infrastructure as Code</span>
+    <span class="pill">Observability</span>
+  </div>
+</header>
 
-  <!-- NAV -->
-  <nav>
-    <a href="#" class="nav-logo">Mai<span>s</span>on</a>
-    <ul class="nav-links">
-      <li><a href="#">New Arrivals</a></li>
-      <li><a href="#">Collections</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Stores</a></li>
-    </ul>
-    <div class="nav-actions">
-      <button title="Search">🔍</button>
-      <button title="Account">👤</button>
-      <button class="cart-btn">
-        🛍 Cart <span class="cart-count">3</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-left">
-      <p class="hero-eyebrow">New Collection — SS 2026</p>
-      <h1 class="hero-title">Wear What<br>You <em>Truly</em><br>Deserve</h1>
-      <p class="hero-desc">Timeless luxury crafted for those who understand that true elegance is never loud — it simply is.</p>
-      <div class="hero-cta-group">
-        <button class="btn-primary">Explore Now</button>
-        <button class="btn-ghost">View Lookbook</button>
-      </div>
-    </div>
-    <div class="hero-right">
-      <div class="hero-visual">
-        <div class="hero-circle">
-          <div class="hero-icon-large">🧥</div>
-        </div>
-        <div class="hero-badge">
-          <span>New<br>Season<br>2026</span>
-        </div>
-        <div class="hero-product-label">
-          <div class="name">Cashmere Overcoat</div>
-          <div class="price">From ₹12,500</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MARQUEE -->
-  <div class="marquee-strip">
-    <div class="marquee-track">
-      <span class="marquee-item">Free shipping over ₹2999 <span>✦</span></span>
-      <span class="marquee-item">New Arrivals Every Week <span>✦</span></span>
-      <span class="marquee-item">Premium Craftsmanship <span>✦</span></span>
-      <span class="marquee-item">Easy 30-Day Returns <span>✦</span></span>
-      <span class="marquee-item">Sustainably Sourced <span>✦</span></span>
-      <span class="marquee-item">Free shipping over ₹2999 <span>✦</span></span>
-      <span class="marquee-item">New Arrivals Every Week <span>✦</span></span>
-      <span class="marquee-item">Premium Craftsmanship <span>✦</span></span>
-      <span class="marquee-item">Easy 30-Day Returns <span>✦</span></span>
-      <span class="marquee-item">Sustainably Sourced <span>✦</span></span>
-    </div>
+<!-- DEVOPS CONCEPTS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Core DevOps Concepts</h2>
+    <div class="section-line"></div>
   </div>
 
-  <!-- TRUST BAR -->
-  <div class="trust-bar reveal">
-    <div class="trust-item">
-      <div class="trust-icon">🚚</div>
-      <div>
-        <div class="trust-text-title">Free Delivery</div>
-        <div class="trust-text-sub">Orders above ₹2,999</div>
-      </div>
+  <div class="concepts-grid">
+
+    <div class="concept-card" style="animation-delay:0.05s">
+      <div class="concept-icon">🔄</div>
+      <h3>CI/CD Pipeline</h3>
+      <p>Continuous Integration & Continuous Delivery — automate build, test, and deploy stages so every commit flows safely to production.</p>
+      <span class="concept-tag tag-process">Process</span>
     </div>
-    <div class="trust-item">
-      <div class="trust-icon">↩️</div>
-      <div>
-        <div class="trust-text-title">30-Day Returns</div>
-        <div class="trust-text-sub">Hassle-free policy</div>
-      </div>
+
+    <div class="concept-card" style="animation-delay:0.1s">
+      <div class="concept-icon">📦</div>
+      <h3>Containerization</h3>
+      <p>Package an app and all its dependencies into a lightweight, portable unit that runs identically on any machine or cloud.</p>
+      <span class="concept-tag tag-infra">Infra</span>
     </div>
-    <div class="trust-item">
-      <div class="trust-icon">🔒</div>
-      <div>
-        <div class="trust-text-title">Secure Payments</div>
-        <div class="trust-text-sub">256-bit SSL encrypted</div>
-      </div>
+
+    <div class="concept-card" style="animation-delay:0.15s">
+      <div class="concept-icon">🏗️</div>
+      <h3>Infrastructure as Code</h3>
+      <p>Manage servers, networks, and clusters using version-controlled config files — reproducible, auditable, drift-free environments.</p>
+      <span class="concept-tag tag-devops">DevOps</span>
     </div>
-    <div class="trust-item">
-      <div class="trust-icon">💎</div>
-      <div>
-        <div class="trust-text-title">Certified Authentic</div>
-        <div class="trust-text-sub">100% genuine products</div>
-      </div>
+
+    <div class="concept-card" style="animation-delay:0.2s">
+      <div class="concept-icon">🔀</div>
+      <h3>Microservices</h3>
+      <p>Decompose an application into small, independently deployable services that communicate over well-defined APIs.</p>
+      <span class="concept-tag tag-devops">DevOps</span>
     </div>
+
+    <div class="concept-card" style="animation-delay:0.25s">
+      <div class="concept-icon">📈</div>
+      <h3>Observability</h3>
+      <p>Metrics, logs, and traces give you full visibility into system health. You can't fix what you can't see.</p>
+      <span class="concept-tag tag-infra">Infra</span>
+    </div>
+
+    <div class="concept-card" style="animation-delay:0.3s">
+      <div class="concept-icon">⚖️</div>
+      <h3>Orchestration</h3>
+      <p>Automatically schedule, scale, heal, and load-balance containers across a cluster of machines using tools like Kubernetes.</p>
+      <span class="concept-tag tag-infra">Infra</span>
+    </div>
+
+    <div class="concept-card" style="animation-delay:0.35s">
+      <div class="concept-icon">🔒</div>
+      <h3>Shift-Left Security</h3>
+      <p>Integrate security scanning, secret management, and policy enforcement early in the pipeline — not as an afterthought.</p>
+      <span class="concept-tag tag-process">Process</span>
+    </div>
+
+    <div class="concept-card" style="animation-delay:0.4s">
+      <div class="concept-icon">🌐</div>
+      <h3>Service Mesh</h3>
+      <p>Layer for inter-service communication handling traffic management, mTLS encryption, retries, and observability (e.g., Istio, Linkerd).</p>
+      <span class="concept-tag tag-devops">DevOps</span>
+    </div>
+
+    <div class="concept-card" style="animation-delay:0.45s">
+      <div class="concept-icon">🚀</div>
+      <h3>GitOps</h3>
+      <p>Use Git as the single source of truth for declarative infrastructure. Pull-based reconcilers apply changes automatically.</p>
+      <span class="concept-tag tag-process">Process</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TABS SECTION -->
+<section class="tabs-section">
+  <div class="section-header" style="margin-top:40px">
+    <span class="section-num">02</span>
+    <h2>Day-by-Day Code Reference</h2>
+    <div class="section-line"></div>
   </div>
 
-  <!-- CATEGORIES -->
-  <section class="categories reveal">
-    <div class="section-header">
-      <p class="section-eyebrow">Browse by Category</p>
-      <h2 class="section-title">Shop by <em>Collection</em></h2>
-    </div>
-    <div class="category-grid">
-      <div class="cat-card">
-        <div class="cat-bg cat-1">
-          <div class="cat-icon">👗</div>
-          <div class="cat-info">
-            <div class="cat-label">Women's</div>
-            <div class="cat-name">Seasonal<br>Wardrobe</div>
-            <div class="cat-count">148 items</div>
-          </div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <div class="cat-bg cat-2">
-          <div class="cat-icon">👔</div>
-          <div class="cat-info">
-            <div class="cat-label">Men's</div>
-            <div class="cat-name">Tailored Essentials</div>
-            <div class="cat-count">96 items</div>
-          </div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <div class="cat-bg cat-3">
-          <div class="cat-icon">👜</div>
-          <div class="cat-info">
-            <div class="cat-label">Accessories</div>
-            <div class="cat-name">Bags & More</div>
-            <div class="cat-count">62 items</div>
-          </div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <div class="cat-bg cat-4">
-          <div class="cat-icon">👟</div>
-          <div class="cat-info">
-            <div class="cat-label">Footwear</div>
-            <div class="cat-name">Step in Style</div>
-            <div class="cat-count">74 items</div>
-          </div>
-        </div>
-      </div>
-      <div class="cat-card">
-        <div class="cat-bg cat-5">
-          <div class="cat-icon">💍</div>
-          <div class="cat-info">
-            <div class="cat-label">Jewellery</div>
-            <div class="cat-name">Fine Adornments</div>
-            <div class="cat-count">38 items</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Tool Selector -->
+  <div class="tool-selector">
+    <button class="tool-btn active-docker" id="btn-docker" onclick="selectTool('docker')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.98 11.08h2.12v-2.12h-2.12v2.12zm-2.83 0h2.12v-2.12h-2.12v2.12zm-2.83 0h2.12v-2.12H8.32v2.12zm-2.83 0h2.12v-2.12H5.49v2.12zm2.83-2.83h2.12V6.13H8.32v2.12zm2.83 0h2.12V6.13h-2.12v2.12zm2.83 0h2.12V6.13h-2.12v2.12zm5.65 2.83h2.12v-2.12h-2.12v2.12zM2.5 11.57c0 2.34 1.9 4.24 4.24 4.24h9.9c2.34 0 4.24-1.9 4.24-4.24v-.49c.5-.21.86-.7.86-1.27 0-.77-.63-1.4-1.4-1.4h-.5c-.01-.01-.01-.01-.02-.02C19.64 5.2 16.93 3.5 13.74 3.5H9.84C6.9 3.5 4.32 5 3.2 7.16c-0.5.07-.87.49-.87 1c0 .56.39 1.02.92 1.14l-.01.27c0 .01.01.01.01.02H2.5V11.57z"/></svg>
+      Docker
+    </button>
+    <button class="tool-btn" id="btn-k8s" onclick="selectTool('k8s')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.204 14.35l.007.01-.999 2.413a5.171 5.171 0 01-2.864-2.205l2.456-.396.004.005a.44.44 0 01.396.173zm-.833-2.129a.44.44 0 01.173-.396l.006-.007-1.067-2.37a5.208 5.208 0 00-1.364 3.841l2.252-1.068zm1.724-.22a.44.44 0 01.43-.139l.008-.001.58-2.48a5.208 5.208 0 00-3.782 1.05l2.764 1.57zm1.898.414a.44.44 0 01.14.43l-.001.008 2.48.58a5.208 5.208 0 00-1.05-3.782l-1.569 2.764zm.414 1.897a.44.44 0 01-.173.397l-.006.007 1.067 2.37a5.208 5.208 0 001.363-3.842l-2.251 1.068zm-1.723.22a.44.44 0 01-.43.139l-.008.001-.58 2.48a5.208 5.208 0 003.782-1.05l-2.764-1.57z"/><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-.53 3.074l.53-.093.53.093 3.957 6.858-.093.53-.43.3H8.036l-.43-.3-.093-.53z"/></svg>
+      Kubernetes
+    </button>
+  </div>
 
-  <!-- PRODUCTS -->
-  <section class="products">
-    <div class="section-header reveal">
-      <p class="section-eyebrow">Curated For You</p>
-      <h2 class="section-title">Featured <em>Pieces</em></h2>
+  <!-- DOCKER PANEL -->
+  <div class="panel active" id="panel-docker">
+    <div class="day-tabs" id="docker-day-tabs">
+      <button class="day-tab active" onclick="selectDay('docker',1,this)">Day 1</button>
+      <button class="day-tab" onclick="selectDay('docker',2,this)">Day 2</button>
+      <button class="day-tab" onclick="selectDay('docker',3,this)">Day 3</button>
+      <button class="day-tab" onclick="selectDay('docker',4,this)">Day 4</button>
+      <button class="day-tab" onclick="selectDay('docker',5,this)">Day 5</button>
     </div>
-    <div class="products-filter reveal">
-      <button class="filter-btn active">All</button>
-      <button class="filter-btn">New Arrivals</button>
-      <button class="filter-btn">Best Sellers</button>
-      <button class="filter-btn">On Sale</button>
-      <button class="filter-btn">Exclusive</button>
-    </div>
-    <div class="products-grid reveal">
-      <!-- Product 1 -->
-      <div class="product-card">
-        <div class="product-image">
-          <div class="product-emoji">🧥</div>
-          <div class="product-tag new">New</div>
-          <button class="wishlist-btn">♡</button>
-          <div class="product-overlay">
-            <button class="overlay-btn">Add to Cart</button>
-            <button class="overlay-btn secondary">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <div class="product-cat">Outerwear</div>
-          <div class="product-name">Merino Wool Blazer</div>
-          <div class="product-pricing">
-            <span class="product-price">₹8,499</span>
-            <span class="product-original">₹11,000</span>
-          </div>
-          <div class="product-stars">★★★★★ (42)</div>
-        </div>
-      </div>
-      <!-- Product 2 -->
-      <div class="product-card">
-        <div class="product-image">
-          <div class="product-emoji">👗</div>
-          <div class="product-tag">Sale</div>
-          <button class="wishlist-btn">♡</button>
-          <div class="product-overlay">
-            <button class="overlay-btn">Add to Cart</button>
-            <button class="overlay-btn secondary">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <div class="product-cat">Dresses</div>
-          <div class="product-name">Silk Midi Wrap Dress</div>
-          <div class="product-pricing">
-            <span class="product-price">₹6,299</span>
-            <span class="product-original">₹8,500</span>
-          </div>
-          <div class="product-stars">★★★★☆ (28)</div>
-        </div>
-      </div>
-      <!-- Product 3 -->
-      <div class="product-card">
-        <div class="product-image">
-          <div class="product-emoji">👜</div>
-          <button class="wishlist-btn">♡</button>
-          <div class="product-overlay">
-            <button class="overlay-btn">Add to Cart</button>
-            <button class="overlay-btn secondary">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <div class="product-cat">Bags</div>
-          <div class="product-name">Leather Tote Bag</div>
-          <div class="product-pricing">
-            <span class="product-price">₹4,999</span>
-          </div>
-          <div class="product-stars">★★★★★ (67)</div>
-        </div>
-      </div>
-      <!-- Product 4 -->
-      <div class="product-card">
-        <div class="product-image">
-          <div class="product-emoji">👟</div>
-          <div class="product-tag new">New</div>
-          <button class="wishlist-btn">♡</button>
-          <div class="product-overlay">
-            <button class="overlay-btn">Add to Cart</button>
-            <button class="overlay-btn secondary">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <div class="product-cat">Footwear</div>
-          <div class="product-name">Suede Chelsea Boots</div>
-          <div class="product-pricing">
-            <span class="product-price">₹7,800</span>
-          </div>
-          <div class="product-stars">★★★★★ (19)</div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- PROMO BANNER -->
-  <section class="promo-banner">
-    <div class="promo-left reveal">
-      <p class="promo-eyebrow">Limited Time Offer</p>
-      <h2 class="promo-title">Up to <strong>40% Off</strong><br>Summer Sale</h2>
-      <div class="countdown">
-        <div class="count-item">
-          <div class="count-num" id="days">02</div>
-          <div class="count-label">Days</div>
-        </div>
-        <div class="count-sep">:</div>
-        <div class="count-item">
-          <div class="count-num" id="hours">14</div>
-          <div class="count-label">Hours</div>
-        </div>
-        <div class="count-sep">:</div>
-        <div class="count-item">
-          <div class="count-num" id="mins">37</div>
-          <div class="count-label">Mins</div>
-        </div>
-        <div class="count-sep">:</div>
-        <div class="count-item">
-          <div class="count-num" id="secs">08</div>
-          <div class="count-label">Secs</div>
+    <!-- Docker Day 1 -->
+    <div class="day-panel active" id="docker-day-1">
+      <div class="day-meta">
+        <div class="day-meta-num">01</div>
+        <div class="day-meta-info">
+          <h4>Docker Basics — Installation & First Container</h4>
+          <p>Learn to install Docker, run containers, and understand the core image/container model.</p>
         </div>
       </div>
-      <p class="promo-desc">Discover handpicked pieces at exceptional prices. Our seasonal sale brings you access to premium fashion without the premium price tag.</p>
-      <button class="btn-primary">Shop the Sale</button>
-    </div>
-    <div class="promo-right reveal">
-      <div class="promo-visual">💄</div>
-    </div>
-  </section>
+      <div class="code-blocks">
 
-  <!-- NEWSLETTER -->
-  <section class="newsletter reveal">
-    <p class="section-eyebrow" style="color:rgba(255,255,255,0.6)">Stay in the Know</p>
-    <h2 class="newsletter-title">Join the Inner Circle</h2>
-    <p class="newsletter-sub">Early access, exclusive offers, and stories from the world of fashion.</p>
-    <div class="newsletter-form">
-      <input type="email" class="newsletter-input" placeholder="Your email address" />
-      <button class="newsletter-submit">Subscribe</button>
-    </div>
-  </section>
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Verify Installation</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Check Docker is correctly installed and confirm the daemon is running.</div>
+          <pre><span class="c-comment"># Check Docker version</span>
+<span class="c-cmd">docker</span> <span class="c-flag">--version</span>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-top">
-      <div>
-        <div class="footer-logo">Mai<span>s</span>on</div>
-        <p class="footer-desc">Premium fashion crafted with intention. We believe in quality over quantity, and style that endures.</p>
-        <div class="footer-social">
-          <a href="#" class="social-icon">𝕏</a>
-          <a href="#" class="social-icon">📸</a>
-          <a href="#" class="social-icon">📘</a>
-          <a href="#" class="social-icon">📌</a>
+<span class="c-comment"># Verify daemon is running</span>
+<span class="c-cmd">docker</span> info
+
+<span class="c-comment"># Run the canonical hello-world image</span>
+<span class="c-cmd">docker</span> run hello-world</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Pull & Run Images</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Pull images from Docker Hub and run containers in different modes.</div>
+          <pre><span class="c-comment"># Pull an image without running it</span>
+<span class="c-cmd">docker</span> pull <span class="c-val">nginx:latest</span>
+
+<span class="c-comment"># Run interactively in foreground</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">-it</span> ubuntu:22.04 <span class="c-str">/bin/bash</span>
+
+<span class="c-comment"># Run detached (background) with name and port mapping</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">-d</span> <span class="c-flag">--name</span> <span class="c-val">webserver</span> <span class="c-flag">-p</span> <span class="c-num">8080</span>:<span class="c-num">80</span> nginx
+
+<span class="c-comment"># List running containers</span>
+<span class="c-cmd">docker</span> ps
+
+<span class="c-comment"># List ALL containers (including stopped)</span>
+<span class="c-cmd">docker</span> ps <span class="c-flag">-a</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Basic Container Lifecycle</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Start, stop, restart, and remove containers.</div>
+          <pre><span class="c-comment"># Stop a running container</span>
+<span class="c-cmd">docker</span> stop <span class="c-val">webserver</span>
+
+<span class="c-comment"># Start a stopped container</span>
+<span class="c-cmd">docker</span> start <span class="c-val">webserver</span>
+
+<span class="c-comment"># Restart container</span>
+<span class="c-cmd">docker</span> restart <span class="c-val">webserver</span>
+
+<span class="c-comment"># Remove a stopped container</span>
+<span class="c-cmd">docker</span> rm <span class="c-val">webserver</span>
+
+<span class="c-comment"># Force remove a running container</span>
+<span class="c-cmd">docker</span> rm <span class="c-flag">-f</span> <span class="c-val">webserver</span>
+
+<span class="c-comment"># View container logs</span>
+<span class="c-cmd">docker</span> logs <span class="c-flag">-f</span> <span class="c-val">webserver</span></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Docker Day 2 -->
+    <div class="day-panel" id="docker-day-2">
+      <div class="day-meta">
+        <div class="day-meta-num">02</div>
+        <div class="day-meta-info">
+          <h4>Dockerfile — Building Custom Images</h4>
+          <p>Write Dockerfiles to package your application into a reproducible, layered image.</p>
         </div>
       </div>
-      <div>
-        <div class="footer-col-title">Shop</div>
-        <ul class="footer-links">
-          <li><a href="#">New Arrivals</a></li>
-          <li><a href="#">Women's</a></li>
-          <li><a href="#">Men's</a></li>
-          <li><a href="#">Accessories</a></li>
-          <li><a href="#">Sale</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Help</div>
-        <ul class="footer-links">
-          <li><a href="#">FAQs</a></li>
-          <li><a href="#">Shipping Info</a></li>
-          <li><a href="#">Returns</a></li>
-          <li><a href="#">Track Order</a></li>
-          <li><a href="#">Contact Us</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Company</div>
-        <ul class="footer-links">
-          <li><a href="#">About Maison</a></li>
-          <li><a href="#">Sustainability</a></li>
-          <li><a href="#">Careers</a></li>
-          <li><a href="#">Press</a></li>
-          <li><a href="#">Stores</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="footer-copy">© 2026 Maison. All rights reserved.</p>
-      <div class="payment-icons">
-        <div class="pay-icon">VISA</div>
-        <div class="pay-icon">MC</div>
-        <div class="pay-icon">UPI</div>
-        <div class="pay-icon">AMEX</div>
-      </div>
-      <div class="footer-bottom-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Cookie Policy</a>
-      </div>
-    </div>
-  </footer>
+      <div class="code-blocks">
 
-  <script>
-    // Custom cursor
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-    function animateCursor() {
-      cursor.style.left = mx + 'px';
-      cursor.style.top = my + 'px';
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top = ry + 'px';
-      requestAnimationFrame(animateCursor);
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Basic Dockerfile (Node.js App)</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">A production-ready Node.js Dockerfile following best practices.</div>
+          <pre><span class="c-comment"># Use a specific version (never just 'latest' in production)</span>
+<span class="c-key">FROM</span> <span class="c-val">node:20-alpine</span>
+
+<span class="c-comment"># Set working directory inside container</span>
+<span class="c-key">WORKDIR</span> <span class="c-str">/app</span>
+
+<span class="c-comment"># Copy package files first (leverages layer caching)</span>
+<span class="c-key">COPY</span> package*.json ./
+
+<span class="c-comment"># Install dependencies</span>
+<span class="c-key">RUN</span> npm ci <span class="c-flag">--only=production</span>
+
+<span class="c-comment"># Copy the rest of the source code</span>
+<span class="c-key">COPY</span> . .
+
+<span class="c-comment"># Expose the port the app listens on</span>
+<span class="c-key">EXPOSE</span> <span class="c-num">3000</span>
+
+<span class="c-comment"># Define healthcheck</span>
+<span class="c-key">HEALTHCHECK</span> <span class="c-flag">--interval=30s</span> <span class="c-flag">--timeout=3s</span> \
+  CMD wget -qO- http://localhost:3000/health || exit 1
+
+<span class="c-comment"># Run as non-root user for security</span>
+<span class="c-key">USER</span> <span class="c-val">node</span>
+
+<span class="c-comment"># Default command to run the app</span>
+<span class="c-key">CMD</span> [<span class="c-str">"node"</span>, <span class="c-str">"server.js"</span>]</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Build & Tag Images</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Build images from your Dockerfile and tag them for registries.</div>
+          <pre><span class="c-comment"># Build with a tag</span>
+<span class="c-cmd">docker</span> build <span class="c-flag">-t</span> <span class="c-val">myapp:1.0.0</span> .
+
+<span class="c-comment"># Build with multiple tags</span>
+<span class="c-cmd">docker</span> build <span class="c-flag">-t</span> <span class="c-val">myapp:1.0.0</span> <span class="c-flag">-t</span> <span class="c-val">myapp:latest</span> .
+
+<span class="c-comment"># Build targeting a specific Dockerfile</span>
+<span class="c-cmd">docker</span> build <span class="c-flag">-f</span> <span class="c-str">Dockerfile.prod</span> <span class="c-flag">-t</span> <span class="c-val">myapp:prod</span> .
+
+<span class="c-comment"># View all local images</span>
+<span class="c-cmd">docker</span> images
+
+<span class="c-comment"># Tag an existing image for a registry</span>
+<span class="c-cmd">docker</span> tag <span class="c-val">myapp:1.0.0</span> <span class="c-str">myrepo/myapp:1.0.0</span>
+
+<span class="c-comment"># Push to Docker Hub</span>
+<span class="c-cmd">docker</span> push <span class="c-str">myrepo/myapp:1.0.0</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Multi-Stage Build</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Use multi-stage builds to create lean production images by separating build and runtime environments.</div>
+          <pre><span class="c-comment"># ─── Stage 1: Build ───────────────────────────</span>
+<span class="c-key">FROM</span> <span class="c-val">node:20</span> <span class="c-key">AS</span> builder
+<span class="c-key">WORKDIR</span> <span class="c-str">/app</span>
+<span class="c-key">COPY</span> . .
+<span class="c-key">RUN</span> npm ci &amp;&amp; npm run build
+
+<span class="c-comment"># ─── Stage 2: Production (tiny image) ─────────</span>
+<span class="c-key">FROM</span> <span class="c-val">node:20-alpine</span>
+<span class="c-key">WORKDIR</span> <span class="c-str">/app</span>
+<span class="c-comment"># Copy only the built artifacts from the builder</span>
+<span class="c-key">COPY</span> <span class="c-flag">--from=builder</span> /app/dist ./dist
+<span class="c-key">COPY</span> <span class="c-flag">--from=builder</span> /app/node_modules ./node_modules
+<span class="c-key">USER</span> <span class="c-val">node</span>
+<span class="c-key">CMD</span> [<span class="c-str">"node"</span>, <span class="c-str">"dist/index.js"</span>]</pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Docker Day 3 -->
+    <div class="day-panel" id="docker-day-3">
+      <div class="day-meta">
+        <div class="day-meta-num">03</div>
+        <div class="day-meta-info">
+          <h4>Docker Compose — Multi-Container Apps</h4>
+          <p>Orchestrate multiple containers locally with Docker Compose YAML definitions.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> docker-compose.yml (Full Stack App)</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Define a web app + database + cache stack in one compose file.</div>
+          <pre><span class="c-key">version</span>: <span class="c-str">'3.9'</span>
+
+<span class="c-key">services</span>:
+  <span class="c-key">app</span>:
+    <span class="c-key">build</span>:
+      <span class="c-key">context</span>: .
+      <span class="c-key">target</span>: <span class="c-val">development</span>
+    <span class="c-key">ports</span>:
+      - <span class="c-str">"3000:3000"</span>
+    <span class="c-key">environment</span>:
+      - <span class="c-val">DATABASE_URL=postgres://user:pass@db:5432/mydb</span>
+      - <span class="c-val">REDIS_URL=redis://cache:6379</span>
+    <span class="c-key">volumes</span>:
+      - .:/app                     <span class="c-comment"># live reload in dev</span>
+      - /app/node_modules
+    <span class="c-key">depends_on</span>:
+      db:
+        <span class="c-key">condition</span>: <span class="c-val">service_healthy</span>
+      cache:
+        <span class="c-key">condition</span>: <span class="c-val">service_started</span>
+
+  <span class="c-key">db</span>:
+    <span class="c-key">image</span>: <span class="c-val">postgres:16-alpine</span>
+    <span class="c-key">environment</span>:
+      POSTGRES_USER: <span class="c-str">user</span>
+      POSTGRES_PASSWORD: <span class="c-str">pass</span>
+      POSTGRES_DB: <span class="c-str">mydb</span>
+    <span class="c-key">volumes</span>:
+      - pg_data:/var/lib/postgresql/data
+    <span class="c-key">healthcheck</span>:
+      <span class="c-key">test</span>: [<span class="c-str">"CMD-SHELL"</span>, <span class="c-str">"pg_isready -U user"</span>]
+      <span class="c-key">interval</span>: <span class="c-num">10</span>s
+      <span class="c-key">retries</span>: <span class="c-num">5</span>
+
+  <span class="c-key">cache</span>:
+    <span class="c-key">image</span>: <span class="c-val">redis:7-alpine</span>
+    <span class="c-key">command</span>: redis-server <span class="c-flag">--save ""</span> <span class="c-flag">--appendonly no</span>
+
+<span class="c-key">volumes</span>:
+  pg_data:</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Compose Commands</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Essential commands for managing your Compose stack.</div>
+          <pre><span class="c-comment"># Start all services (build if needed)</span>
+<span class="c-cmd">docker</span> compose up <span class="c-flag">--build</span>
+
+<span class="c-comment"># Start in background</span>
+<span class="c-cmd">docker</span> compose up <span class="c-flag">-d</span>
+
+<span class="c-comment"># View logs for all services</span>
+<span class="c-cmd">docker</span> compose logs <span class="c-flag">-f</span>
+
+<span class="c-comment"># Scale a specific service</span>
+<span class="c-cmd">docker</span> compose up <span class="c-flag">--scale</span> <span class="c-val">app=3</span>
+
+<span class="c-comment"># Execute command in running container</span>
+<span class="c-cmd">docker</span> compose exec <span class="c-val">app</span> sh
+
+<span class="c-comment"># Stop and remove containers + networks</span>
+<span class="c-cmd">docker</span> compose down
+
+<span class="c-comment"># Also remove volumes (destroys data!)</span>
+<span class="c-cmd">docker</span> compose down <span class="c-flag">-v</span></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Docker Day 4 -->
+    <div class="day-panel" id="docker-day-4">
+      <div class="day-meta">
+        <div class="day-meta-num">04</div>
+        <div class="day-meta-info">
+          <h4>Volumes, Networks & Environment Config</h4>
+          <p>Persist data, isolate services with networks, and manage secrets safely.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Volume Management</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Create named volumes and bind mounts for persistent data.</div>
+          <pre><span class="c-comment"># Create a named volume</span>
+<span class="c-cmd">docker</span> volume create <span class="c-val">mydata</span>
+
+<span class="c-comment"># Run with named volume mounted</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">-v</span> <span class="c-val">mydata:/app/data</span> myapp
+
+<span class="c-comment"># Bind mount (host path:container path)</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">-v</span> <span class="c-str">$(pwd)/data:/app/data</span> myapp
+
+<span class="c-comment"># Read-only bind mount</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">-v</span> <span class="c-str">$(pwd)/config:/app/config:ro</span> myapp
+
+<span class="c-comment"># List volumes</span>
+<span class="c-cmd">docker</span> volume ls
+
+<span class="c-comment"># Inspect a volume</span>
+<span class="c-cmd">docker</span> volume inspect <span class="c-val">mydata</span>
+
+<span class="c-comment"># Remove unused volumes</span>
+<span class="c-cmd">docker</span> volume prune</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Network Management</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Create custom networks so containers can communicate securely by name.</div>
+          <pre><span class="c-comment"># Create a custom bridge network</span>
+<span class="c-cmd">docker</span> network create <span class="c-val">app-network</span>
+
+<span class="c-comment"># Run container connected to that network</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">--network</span> <span class="c-val">app-network</span> <span class="c-flag">--name</span> <span class="c-val">api</span> myapp
+
+<span class="c-comment"># Connect a running container to a network</span>
+<span class="c-cmd">docker</span> network connect <span class="c-val">app-network</span> <span class="c-val">webserver</span>
+
+<span class="c-comment"># List networks</span>
+<span class="c-cmd">docker</span> network ls
+
+<span class="c-comment"># Inspect network (see connected containers)</span>
+<span class="c-cmd">docker</span> network inspect <span class="c-val">app-network</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Environment Variables & .env</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Pass configuration to containers without baking secrets into images.</div>
+          <pre><span class="c-comment"># Pass env vars at runtime</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">-e</span> <span class="c-val">NODE_ENV=production</span> <span class="c-flag">-e</span> <span class="c-val">PORT=3000</span> myapp
+
+<span class="c-comment"># Load from a .env file</span>
+<span class="c-cmd">docker</span> run <span class="c-flag">--env-file</span> <span class="c-str">.env.production</span> myapp
+
+<span class="c-comment"># In docker-compose — reference .env automatically</span>
+<span class="c-comment"># .env file in project root is loaded by default</span>
+<span class="c-comment"># Override with: --env-file custom.env</span>
+
+<span class="c-comment"># Print env inside a running container</span>
+<span class="c-cmd">docker</span> exec <span class="c-val">myapp</span> env</pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Docker Day 5 -->
+    <div class="day-panel" id="docker-day-5">
+      <div class="day-meta">
+        <div class="day-meta-num">05</div>
+        <div class="day-meta-info">
+          <h4>Registry, Cleanup & Production Tips</h4>
+          <p>Push images to registries, clean up resources, and apply production hardening.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Registry Operations</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Login, push, and pull from Docker Hub or a private registry.</div>
+          <pre><span class="c-comment"># Login to Docker Hub</span>
+<span class="c-cmd">docker</span> login
+
+<span class="c-comment"># Login to a private registry</span>
+<span class="c-cmd">docker</span> login <span class="c-val">registry.mycompany.com</span>
+
+<span class="c-comment"># Tag and push to a registry</span>
+<span class="c-cmd">docker</span> tag <span class="c-val">myapp:1.2.0</span> <span class="c-str">registry.mycompany.com/myapp:1.2.0</span>
+<span class="c-cmd">docker</span> push <span class="c-str">registry.mycompany.com/myapp:1.2.0</span>
+
+<span class="c-comment"># Pull from private registry</span>
+<span class="c-cmd">docker</span> pull <span class="c-str">registry.mycompany.com/myapp:1.2.0</span>
+
+<span class="c-comment"># Save image as a tar file (air-gapped envs)</span>
+<span class="c-cmd">docker</span> save <span class="c-flag">-o</span> <span class="c-str">myapp.tar</span> <span class="c-val">myapp:1.2.0</span>
+
+<span class="c-comment"># Load image from tar file</span>
+<span class="c-cmd">docker</span> load <span class="c-flag">-i</span> <span class="c-str">myapp.tar</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> Cleanup & System Prune</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Reclaim disk space by removing unused images, containers, and volumes.</div>
+          <pre><span class="c-comment"># Remove dangling images (untagged)</span>
+<span class="c-cmd">docker</span> image prune
+
+<span class="c-comment"># Remove all unused images</span>
+<span class="c-cmd">docker</span> image prune <span class="c-flag">-a</span>
+
+<span class="c-comment"># Remove all stopped containers</span>
+<span class="c-cmd">docker</span> container prune
+
+<span class="c-comment"># NUCLEAR: Remove everything unused</span>
+<span class="c-comment"># (images, containers, networks, cache)</span>
+<span class="c-cmd">docker</span> system prune <span class="c-flag">-a</span> <span class="c-flag">--volumes</span>
+
+<span class="c-comment"># Check disk usage</span>
+<span class="c-cmd">docker</span> system df</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot docker"></span> .dockerignore</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Exclude files from the build context to speed builds and avoid leaking secrets.</div>
+          <pre><span class="c-comment"># .dockerignore</span>
+node_modules
+npm-debug.log
+<span class="c-val">.git</span>
+<span class="c-val">.gitignore</span>
+<span class="c-val">.env</span>
+<span class="c-val">.env.*</span>
+<span class="c-str">*.md</span>
+<span class="c-str">*.test.js</span>
+coverage/
+dist/           <span class="c-comment"># if built inside Docker</span>
+.DS_Store
+Dockerfile*
+docker-compose*</pre>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /panel-docker -->
+
+  <!-- KUBERNETES PANEL -->
+  <div class="panel" id="panel-k8s">
+    <div class="day-tabs" id="k8s-day-tabs">
+      <button class="day-tab active" onclick="selectDay('k8s',1,this)">Day 1</button>
+      <button class="day-tab" onclick="selectDay('k8s',2,this)">Day 2</button>
+      <button class="day-tab" onclick="selectDay('k8s',3,this)">Day 3</button>
+      <button class="day-tab" onclick="selectDay('k8s',4,this)">Day 4</button>
+      <button class="day-tab" onclick="selectDay('k8s',5,this)">Day 5</button>
+    </div>
+
+    <!-- K8s Day 1 -->
+    <div class="day-panel active" id="k8s-day-1">
+      <div class="day-meta">
+        <div class="day-meta-num" style="color:#6b8fff">01</div>
+        <div class="day-meta-info">
+          <h4>kubectl Basics & Cluster Exploration</h4>
+          <p>Install kubectl, connect to a cluster, and explore core resources.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> kubectl Essentials</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Connect to a cluster and explore what's running.</div>
+          <pre><span class="c-comment"># Check kubectl version</span>
+<span class="c-cmd">kubectl</span> version <span class="c-flag">--client</span>
+
+<span class="c-comment"># View cluster info</span>
+<span class="c-cmd">kubectl</span> cluster-info
+
+<span class="c-comment"># List all nodes</span>
+<span class="c-cmd">kubectl</span> get nodes <span class="c-flag">-o wide</span>
+
+<span class="c-comment"># List all namespaces</span>
+<span class="c-cmd">kubectl</span> get namespaces
+
+<span class="c-comment"># View current context (which cluster you're targeting)</span>
+<span class="c-cmd">kubectl</span> config current-context
+
+<span class="c-comment"># Switch context</span>
+<span class="c-cmd">kubectl</span> config use-context <span class="c-val">my-cluster</span>
+
+<span class="c-comment"># View all resources across all namespaces</span>
+<span class="c-cmd">kubectl</span> get all <span class="c-flag">-A</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Pod Operations</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Run, inspect, exec into, and delete Pods.</div>
+          <pre><span class="c-comment"># Run a quick test pod</span>
+<span class="c-cmd">kubectl</span> run <span class="c-val">test-pod</span> <span class="c-flag">--image=nginx:alpine</span> <span class="c-flag">--restart=Never</span>
+
+<span class="c-comment"># List pods in default namespace</span>
+<span class="c-cmd">kubectl</span> get pods
+
+<span class="c-comment"># List pods with more detail</span>
+<span class="c-cmd">kubectl</span> get pods <span class="c-flag">-o wide</span>
+
+<span class="c-comment"># Describe a pod (events, status, volumes)</span>
+<span class="c-cmd">kubectl</span> describe pod <span class="c-val">test-pod</span>
+
+<span class="c-comment"># View pod logs</span>
+<span class="c-cmd">kubectl</span> logs <span class="c-flag">-f</span> <span class="c-val">test-pod</span>
+
+<span class="c-comment"># Execute into a running pod</span>
+<span class="c-cmd">kubectl</span> exec <span class="c-flag">-it</span> <span class="c-val">test-pod</span> <span class="c-flag">--</span> sh
+
+<span class="c-comment"># Delete a pod</span>
+<span class="c-cmd">kubectl</span> delete pod <span class="c-val">test-pod</span></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- K8s Day 2 -->
+    <div class="day-panel" id="k8s-day-2">
+      <div class="day-meta">
+        <div class="day-meta-num" style="color:#6b8fff">02</div>
+        <div class="day-meta-info">
+          <h4>Deployments & ReplicaSets</h4>
+          <p>Declare desired state, roll out updates, and rollback changes safely.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Deployment Manifest</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">A production-grade Deployment with resource limits and rolling update strategy.</div>
+          <pre><span class="c-key">apiVersion</span>: apps/v1
+<span class="c-key">kind</span>: Deployment
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">myapp</span>
+  <span class="c-key">namespace</span>: <span class="c-val">production</span>
+  <span class="c-key">labels</span>:
+    <span class="c-key">app</span>: <span class="c-val">myapp</span>
+<span class="c-key">spec</span>:
+  <span class="c-key">replicas</span>: <span class="c-num">3</span>
+  <span class="c-key">selector</span>:
+    <span class="c-key">matchLabels</span>:
+      <span class="c-key">app</span>: <span class="c-val">myapp</span>
+  <span class="c-key">strategy</span>:
+    <span class="c-key">type</span>: RollingUpdate
+    <span class="c-key">rollingUpdate</span>:
+      <span class="c-key">maxSurge</span>: <span class="c-num">1</span>
+      <span class="c-key">maxUnavailable</span>: <span class="c-num">0</span>
+  <span class="c-key">template</span>:
+    <span class="c-key">metadata</span>:
+      <span class="c-key">labels</span>:
+        <span class="c-key">app</span>: <span class="c-val">myapp</span>
+    <span class="c-key">spec</span>:
+      <span class="c-key">containers</span>:
+      - <span class="c-key">name</span>: <span class="c-val">myapp</span>
+        <span class="c-key">image</span>: <span class="c-str">myrepo/myapp:1.0.0</span>
+        <span class="c-key">ports</span>:
+        - <span class="c-key">containerPort</span>: <span class="c-num">3000</span>
+        <span class="c-key">resources</span>:
+          <span class="c-key">requests</span>:
+            <span class="c-key">cpu</span>: <span class="c-str">"100m"</span>
+            <span class="c-key">memory</span>: <span class="c-str">"128Mi"</span>
+          <span class="c-key">limits</span>:
+            <span class="c-key">cpu</span>: <span class="c-str">"500m"</span>
+            <span class="c-key">memory</span>: <span class="c-str">"512Mi"</span>
+        <span class="c-key">livenessProbe</span>:
+          <span class="c-key">httpGet</span>:
+            <span class="c-key">path</span>: /health
+            <span class="c-key">port</span>: <span class="c-num">3000</span>
+          <span class="c-key">initialDelaySeconds</span>: <span class="c-num">15</span>
+          <span class="c-key">periodSeconds</span>: <span class="c-num">20</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Deployment Commands</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Apply, update, scale, and rollback Deployments.</div>
+          <pre><span class="c-comment"># Apply manifest</span>
+<span class="c-cmd">kubectl</span> apply <span class="c-flag">-f</span> <span class="c-str">deployment.yaml</span>
+
+<span class="c-comment"># Update image (triggers rolling update)</span>
+<span class="c-cmd">kubectl</span> set image deployment/<span class="c-val">myapp</span> \
+  <span class="c-val">myapp=myrepo/myapp:2.0.0</span>
+
+<span class="c-comment"># Watch rollout progress</span>
+<span class="c-cmd">kubectl</span> rollout status deployment/<span class="c-val">myapp</span>
+
+<span class="c-comment"># View rollout history</span>
+<span class="c-cmd">kubectl</span> rollout history deployment/<span class="c-val">myapp</span>
+
+<span class="c-comment"># Rollback to previous version</span>
+<span class="c-cmd">kubectl</span> rollout undo deployment/<span class="c-val">myapp</span>
+
+<span class="c-comment"># Rollback to a specific revision</span>
+<span class="c-cmd">kubectl</span> rollout undo deployment/<span class="c-val">myapp</span> <span class="c-flag">--to-revision=2</span>
+
+<span class="c-comment"># Scale manually</span>
+<span class="c-cmd">kubectl</span> scale deployment/<span class="c-val">myapp</span> <span class="c-flag">--replicas=5</span></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- K8s Day 3 -->
+    <div class="day-panel" id="k8s-day-3">
+      <div class="day-meta">
+        <div class="day-meta-num" style="color:#6b8fff">03</div>
+        <div class="day-meta-info">
+          <h4>Services & Ingress — Exposing Applications</h4>
+          <p>Route traffic to pods via Services and expose apps externally via Ingress.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Service Types</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Expose pods internally (ClusterIP), externally on node (NodePort), or via cloud load balancer (LoadBalancer).</div>
+          <pre><span class="c-key">apiVersion</span>: v1
+<span class="c-key">kind</span>: Service
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">myapp-svc</span>
+<span class="c-key">spec</span>:
+  <span class="c-key">type</span>: ClusterIP           <span class="c-comment"># ClusterIP | NodePort | LoadBalancer</span>
+  <span class="c-key">selector</span>:
+    <span class="c-key">app</span>: <span class="c-val">myapp</span>             <span class="c-comment"># Matches pod labels</span>
+  <span class="c-key">ports</span>:
+  - <span class="c-key">protocol</span>: TCP
+    <span class="c-key">port</span>: <span class="c-num">80</span>              <span class="c-comment"># Cluster-internal port</span>
+    <span class="c-key">targetPort</span>: <span class="c-num">3000</span>     <span class="c-comment"># Container port</span>
+
+<span class="c-comment">---</span>
+<span class="c-comment"># Quick expose command</span>
+<span class="c-cmd">kubectl</span> expose deployment <span class="c-val">myapp</span> \
+  <span class="c-flag">--port=80</span> <span class="c-flag">--target-port=3000</span> <span class="c-flag">--type=LoadBalancer</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Ingress (nginx)</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Route HTTP traffic by hostname/path to different services using an Ingress resource.</div>
+          <pre><span class="c-key">apiVersion</span>: networking.k8s.io/v1
+<span class="c-key">kind</span>: Ingress
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">myapp-ingress</span>
+  <span class="c-key">annotations</span>:
+    <span class="c-key">nginx.ingress.kubernetes.io/rewrite-target</span>: <span class="c-str">/</span>
+    <span class="c-key">cert-manager.io/cluster-issuer</span>: <span class="c-str">"letsencrypt-prod"</span>
+<span class="c-key">spec</span>:
+  <span class="c-key">ingressClassName</span>: nginx
+  <span class="c-key">tls</span>:
+  - <span class="c-key">hosts</span>:
+    - <span class="c-val">myapp.example.com</span>
+    <span class="c-key">secretName</span>: <span class="c-val">myapp-tls</span>
+  <span class="c-key">rules</span>:
+  - <span class="c-key">host</span>: <span class="c-val">myapp.example.com</span>
+    <span class="c-key">http</span>:
+      <span class="c-key">paths</span>:
+      - <span class="c-key">path</span>: /
+        <span class="c-key">pathType</span>: Prefix
+        <span class="c-key">backend</span>:
+          <span class="c-key">service</span>:
+            <span class="c-key">name</span>: <span class="c-val">myapp-svc</span>
+            <span class="c-key">port</span>:
+              <span class="c-key">number</span>: <span class="c-num">80</span>
+      - <span class="c-key">path</span>: /api
+        <span class="c-key">pathType</span>: Prefix
+        <span class="c-key">backend</span>:
+          <span class="c-key">service</span>:
+            <span class="c-key">name</span>: <span class="c-val">api-svc</span>
+            <span class="c-key">port</span>:
+              <span class="c-key">number</span>: <span class="c-num">80</span></pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- K8s Day 4 -->
+    <div class="day-panel" id="k8s-day-4">
+      <div class="day-meta">
+        <div class="day-meta-num" style="color:#6b8fff">04</div>
+        <div class="day-meta-info">
+          <h4>ConfigMaps, Secrets & Persistent Volumes</h4>
+          <p>Externalize configuration, handle sensitive data, and persist storage.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> ConfigMap</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Store non-sensitive configuration as key-value pairs or mounted files.</div>
+          <pre><span class="c-key">apiVersion</span>: v1
+<span class="c-key">kind</span>: ConfigMap
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">app-config</span>
+<span class="c-key">data</span>:
+  <span class="c-key">NODE_ENV</span>: <span class="c-str">"production"</span>
+  <span class="c-key">LOG_LEVEL</span>: <span class="c-str">"info"</span>
+  <span class="c-key">config.json</span>: |
+    {
+      "feature_flags": { "dark_mode": true },
+      "max_connections": 100
     }
-    animateCursor();
 
-    // Hover effects on cursor
-    document.querySelectorAll('button, a, .cat-card, .product-card').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.style.width = '20px'; cursor.style.height = '20px';
-        ring.style.width = '56px'; ring.style.height = '56px';
-        ring.style.opacity = '0.3';
-      });
-      el.addEventListener('mouseleave', () => {
-        cursor.style.width = '10px'; cursor.style.height = '10px';
-        ring.style.width = '36px'; ring.style.height = '36px';
-        ring.style.opacity = '0.5';
-      });
+<span class="c-comment">---</span>
+<span class="c-comment"># Use in a Pod spec:</span>
+<span class="c-key">envFrom</span>:
+- <span class="c-key">configMapRef</span>:
+    <span class="c-key">name</span>: <span class="c-val">app-config</span>
+
+<span class="c-comment"># Or mount as a file volume:</span>
+<span class="c-key">volumes</span>:
+- <span class="c-key">name</span>: config-vol
+  <span class="c-key">configMap</span>:
+    <span class="c-key">name</span>: <span class="c-val">app-config</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Secrets</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Store passwords, tokens, and keys. Values must be base64-encoded.</div>
+          <pre><span class="c-comment"># Create secret imperatively (safest for terminals)</span>
+<span class="c-cmd">kubectl</span> create secret generic <span class="c-val">db-creds</span> \
+  <span class="c-flag">--from-literal=</span><span class="c-val">DB_PASS=s3cr3t</span> \
+  <span class="c-flag">--from-literal=</span><span class="c-val">DB_USER=admin</span>
+
+<span class="c-comment"># Create from file</span>
+<span class="c-cmd">kubectl</span> create secret generic <span class="c-val">tls-certs</span> \
+  <span class="c-flag">--from-file=</span><span class="c-str">tls.crt</span> <span class="c-flag">--from-file=</span><span class="c-str">tls.key</span>
+
+<span class="c-comment"># YAML form (values are base64 encoded)</span>
+<span class="c-key">apiVersion</span>: v1
+<span class="c-key">kind</span>: Secret
+<span class="c-key">type</span>: Opaque
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">db-creds</span>
+<span class="c-key">data</span>:
+  <span class="c-key">DB_USER</span>: <span class="c-str">YWRtaW4=</span>       <span class="c-comment"># echo -n "admin" | base64</span>
+  <span class="c-key">DB_PASS</span>: <span class="c-str">czNjcjN0</span>       <span class="c-comment"># echo -n "s3cr3t" | base64</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> PersistentVolume & PVC</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Request durable storage that survives pod restarts using PersistentVolumeClaims.</div>
+          <pre><span class="c-key">apiVersion</span>: v1
+<span class="c-key">kind</span>: PersistentVolumeClaim
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">postgres-pvc</span>
+<span class="c-key">spec</span>:
+  <span class="c-key">accessModes</span>:
+  - ReadWriteOnce
+  <span class="c-key">storageClassName</span>: <span class="c-val">standard</span>
+  <span class="c-key">resources</span>:
+    <span class="c-key">requests</span>:
+      <span class="c-key">storage</span>: <span class="c-str">10Gi</span>
+
+<span class="c-comment">---</span>
+<span class="c-comment"># Mount in pod spec:</span>
+<span class="c-key">volumes</span>:
+- <span class="c-key">name</span>: pg-storage
+  <span class="c-key">persistentVolumeClaim</span>:
+    <span class="c-key">claimName</span>: <span class="c-val">postgres-pvc</span>
+<span class="c-key">volumeMounts</span>:
+- <span class="c-key">mountPath</span>: /var/lib/postgresql/data
+  <span class="c-key">name</span>: pg-storage</pre>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- K8s Day 5 -->
+    <div class="day-panel" id="k8s-day-5">
+      <div class="day-meta">
+        <div class="day-meta-num" style="color:#6b8fff">05</div>
+        <div class="day-meta-info">
+          <h4>HPA, RBAC & Namespaces — Production Ops</h4>
+          <p>Autoscale workloads, enforce access control, and isolate environments with namespaces.</p>
+        </div>
+      </div>
+      <div class="code-blocks">
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Horizontal Pod Autoscaler</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Automatically scale pod replicas based on CPU/memory metrics.</div>
+          <pre><span class="c-key">apiVersion</span>: autoscaling/v2
+<span class="c-key">kind</span>: HorizontalPodAutoscaler
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">myapp-hpa</span>
+<span class="c-key">spec</span>:
+  <span class="c-key">scaleTargetRef</span>:
+    <span class="c-key">apiVersion</span>: apps/v1
+    <span class="c-key">kind</span>: Deployment
+    <span class="c-key">name</span>: <span class="c-val">myapp</span>
+  <span class="c-key">minReplicas</span>: <span class="c-num">2</span>
+  <span class="c-key">maxReplicas</span>: <span class="c-num">20</span>
+  <span class="c-key">metrics</span>:
+  - <span class="c-key">type</span>: Resource
+    <span class="c-key">resource</span>:
+      <span class="c-key">name</span>: cpu
+      <span class="c-key">target</span>:
+        <span class="c-key">type</span>: Utilization
+        <span class="c-key">averageUtilization</span>: <span class="c-num">60</span>
+  - <span class="c-key">type</span>: Resource
+    <span class="c-key">resource</span>:
+      <span class="c-key">name</span>: memory
+      <span class="c-key">target</span>:
+        <span class="c-key">type</span>: Utilization
+        <span class="c-key">averageUtilization</span>: <span class="c-num">70</span>
+
+<span class="c-comment"># Quick command form</span>
+<span class="c-cmd">kubectl</span> autoscale deployment <span class="c-val">myapp</span> \
+  <span class="c-flag">--cpu-percent=60</span> <span class="c-flag">--min=2</span> <span class="c-flag">--max=20</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> RBAC — Role-Based Access Control</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Define fine-grained permissions using Roles and RoleBindings.</div>
+          <pre><span class="c-key">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span class="c-key">kind</span>: Role
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">pod-reader</span>
+  <span class="c-key">namespace</span>: <span class="c-val">production</span>
+<span class="c-key">rules</span>:
+- <span class="c-key">apiGroups</span>: [<span class="c-str">""</span>]
+  <span class="c-key">resources</span>: [<span class="c-str">"pods"</span>, <span class="c-str">"pods/log"</span>]
+  <span class="c-key">verbs</span>: [<span class="c-str">"get"</span>, <span class="c-str">"list"</span>, <span class="c-str">"watch"</span>]
+
+<span class="c-comment">---</span>
+<span class="c-key">apiVersion</span>: rbac.authorization.k8s.io/v1
+<span class="c-key">kind</span>: RoleBinding
+<span class="c-key">metadata</span>:
+  <span class="c-key">name</span>: <span class="c-val">read-pods-binding</span>
+  <span class="c-key">namespace</span>: <span class="c-val">production</span>
+<span class="c-key">subjects</span>:
+- <span class="c-key">kind</span>: User
+  <span class="c-key">name</span>: <span class="c-str">jane@company.com</span>
+  <span class="c-key">apiGroup</span>: rbac.authorization.k8s.io
+<span class="c-key">roleRef</span>:
+  <span class="c-key">kind</span>: Role
+  <span class="c-key">name</span>: <span class="c-val">pod-reader</span>
+  <span class="c-key">apiGroup</span>: rbac.authorization.k8s.io</pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-block-header">
+            <div class="code-block-title"><span class="dot k8s"></span> Namespaces & Context</div>
+            <button class="copy-btn" onclick="copyCode(this)">COPY</button>
+          </div>
+          <div class="code-desc">Organize resources by team or environment with namespaces.</div>
+          <pre><span class="c-comment"># Create namespace</span>
+<span class="c-cmd">kubectl</span> create namespace <span class="c-val">staging</span>
+
+<span class="c-comment"># Apply resource to a specific namespace</span>
+<span class="c-cmd">kubectl</span> apply <span class="c-flag">-f</span> <span class="c-str">deployment.yaml</span> <span class="c-flag">-n</span> <span class="c-val">staging</span>
+
+<span class="c-comment"># Set default namespace for current context</span>
+<span class="c-cmd">kubectl</span> config set-context <span class="c-flag">--current</span> \
+  <span class="c-flag">--namespace=</span><span class="c-val">production</span>
+
+<span class="c-comment"># View resource quota</span>
+<span class="c-cmd">kubectl</span> get resourcequota <span class="c-flag">-n</span> <span class="c-val">production</span>
+
+<span class="c-comment"># Set resource quota on a namespace</span>
+<span class="c-cmd">kubectl</span> create quota <span class="c-val">dev-quota</span> \
+  <span class="c-flag">--hard=</span><span class="c-str">cpu=4,memory=8Gi,pods=20</span> \
+  <span class="c-flag">-n</span> <span class="c-val">development</span></pre>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /panel-k8s -->
+
+</section>
+
+<footer>
+  <span style="color:var(--accent)">// DevOps Mastery</span> &nbsp;·&nbsp; Docker &amp; Kubernetes Reference &nbsp;·&nbsp; Built for engineers, by engineers
+</footer>
+
+<script>
+  function selectTool(tool) {
+    const panels = document.querySelectorAll('.panel');
+    panels.forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tool).classList.add('active');
+
+    const btns = document.querySelectorAll('.tool-btn');
+    btns.forEach(b => b.classList.remove('active-docker', 'active-k8s'));
+    document.getElementById('btn-' + tool).classList.add('active-' + tool);
+  }
+
+  function selectDay(tool, day, btn) {
+    const panels = document.querySelectorAll('#panel-' + tool + ' .day-panel');
+    panels.forEach(p => p.classList.remove('active'));
+    document.getElementById(tool + '-day-' + day).classList.add('active');
+
+    const tabs = document.querySelectorAll('#' + tool + '-day-tabs .day-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'COPIED!';
+      btn.style.color = 'var(--accent3)';
+      btn.style.borderColor = 'var(--accent3)';
+      setTimeout(() => {
+        btn.textContent = 'COPY';
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 1500);
     });
+  }
 
-    // Scroll reveal
-    const revealEls = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          entry.target.style.transitionDelay = (i % 4) * 0.08 + 's';
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-    revealEls.forEach(el => observer.observe(el));
-
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
+  // Intersection Observer for staggered card animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
     });
+  }, { threshold: 0.1 });
 
-    // Countdown timer
-    function updateCountdown() {
-      const now = new Date();
-      const target = new Date(now);
-      target.setDate(target.getDate() + 2);
-      target.setHours(14, 37, 8, 0);
-      const diff = target - now;
-      const days = Math.floor(diff / 86400000);
-      const hours = Math.floor((diff % 86400000) / 3600000);
-      const mins = Math.floor((diff % 3600000) / 60000);
-      const secs = Math.floor((diff % 60000) / 1000);
-      document.getElementById('days').textContent = String(days).padStart(2,'0');
-      document.getElementById('hours').textContent = String(hours).padStart(2,'0');
-      document.getElementById('mins').textContent = String(mins).padStart(2,'0');
-      document.getElementById('secs').textContent = String(secs).padStart(2,'0');
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-
-    // Wishlist toggle
-    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.stopPropagation();
-        btn.textContent = btn.textContent === '♡' ? '♥' : '♡';
-        btn.style.background = btn.textContent === '♥' ? 'var(--bronze)' : '';
-        btn.style.color = btn.textContent === '♥' ? 'white' : '';
-      });
-    });
-  </script>
+  document.querySelectorAll('.concept-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease, border-color 0.2s, box-shadow 0.2s';
+    observer.observe(card);
+  });
+</script>
 </body>
 </html>
